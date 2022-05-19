@@ -23,7 +23,9 @@ class Audible(BeetsPlugin):
             'fetch_art': True,
             'match_chapters': True,
             'source_weight': 0.0,
-            'include_narrator_in_artists': True
+            'include_narrator_in_artists': True,
+            'desc_txt': True,
+            'reader_txt': True
         })
         # Mapping of asin to cover art urls
         self.cover_art_urls = {}
@@ -445,11 +447,13 @@ class Audible(BeetsPlugin):
         item = items[0]
         destination = os.path.dirname(item.path)
         
-        description = item.comments
-        with open(os.path.join(destination, b'desc.txt'), 'w') as f:
-            f.write(description)
+        if self.config['desc_txt']:
+            description = item.comments
+            with open(os.path.join(destination, b'desc.txt'), 'w') as f:
+                f.write(description)
         
-        narrator = item.composer
-        with open(os.path.join(destination, b'reader.txt'), 'w') as f:
-            f.write(narrator)
+        if self.config['reader_txt']:
+            narrator = item.composer
+            with open(os.path.join(destination, b'reader.txt'), 'w') as f:
+                f.write(narrator)
         
