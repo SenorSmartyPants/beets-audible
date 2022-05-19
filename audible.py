@@ -59,10 +59,6 @@ class Audible(BeetsPlugin):
             mediafile.MP4StorageStyle('shwm', as_type=int),
         )
         self.add_media_field('show_movement', show_movement)
-        gapless = mediafile.MediaField(
-            mediafile.MP4StorageStyle('pgap', as_type=bool),
-        )
-        self.add_media_field('gapless', gapless)
 
         series_name = mediafile.MediaField(
             mediafile.MP3StorageStyle(u'MVNM'),
