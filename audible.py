@@ -25,8 +25,10 @@ class Audible(BeetsPlugin):
             'source_weight': 0.0,
             'include_narrator_in_artists': True,
             'desc_txt': True,
-            'reader_txt': True
+            'reader_txt': True,
+            'goodreads_apikey': None
         })
+        self.config['goodreads_apikey'].redact = True
         # Mapping of asin to cover art urls
         self.cover_art_urls = {}
         # stores paths of downloaded cover art to be used during import
@@ -50,7 +52,10 @@ class Audible(BeetsPlugin):
             mediafile.ASFStorageStyle('WM/AlbumSortOrder'),
         )
         self.add_media_field('album_sort', album_sort)
-
+        desc = mediafile.MediaField(
+            mediafile.MP4StorageStyle('desc')
+        )
+        self.add_media_field('desc', desc)
         itunes_media_type = mediafile.MediaField(
             mediafile.MP4StorageStyle('stik', as_type=int),
         )
@@ -166,7 +171,7 @@ class Audible(BeetsPlugin):
                 # is technically possible (based on the API) but unsure how often it happens
                 self._log.warn(f"Chapter data for {a.album} could be inaccurate.")
             
-            if is_likely_match and not (is_chapterized and self.config['match_chapters']):
+            if is_likely_match and (not is_chapterized or not self.config['match_chapters']):
                 self._log.debug(f"Attempting to match book: album {album} with {len(items)} files to book {a.album} with {len(a.tracks)} chapters.")
                 
                 common_track_attributes = dict(a.tracks[0])
@@ -181,7 +186,6 @@ class Audible(BeetsPlugin):
                 # using the bytestring_path function from Beets is needed for correctness
                 # I was noticing inaccurate sorting if using str to convert paths to strings
                 naturally_sorted_items = os_sorted(items, key=lambda i: util.bytestring_path(i.path))
-
                 a.tracks = [
                     TrackInfo(**common_track_attributes, title=item.title, length=item.length, index=i+1)
                     for i, item in enumerate(naturally_sorted_items)
@@ -384,8 +388,8 @@ class Audible(BeetsPlugin):
         tags['bpm'] = None
         if path.endswith(b"m4b"):
             # audiobook media type, see https://exiftool.org/TagNames/QuickTime.html
+            tags["desc"] = tags.get("comments")
             tags["itunes_media_type"] = 2
-            tags["gapless"] = True
             if tags.get("series_name"):
                 tags["show_movement"] = 1
             try:
