@@ -55,6 +55,8 @@ This Beets plugin solves both problems.
      include_narrator_in_artists: true # include author and narrator in artist tag. Or just author
      desc_txt': true # output desc.txt
      reader_txt': true # output reader.txt
+     remove_series_reference_in_title: false # remove ", Book X" from end of titles
+     remove_series_reference_in_subtitle: false # remove subtitle if it contains the series name and the word book ex. "Book 1 in Great Series", "Great Series, Book 1"
 
    copyartifacts:
      extensions: .yml # so that metadata.yml is copied, see below
