@@ -330,8 +330,8 @@ class Audible(BeetsPlugin):
                 #subtitle contains both the series name and the word "book"
                 #so it is likely just "Series, Book X" or "Book X in Series"
                 #don't include subtitle
-                subtitle = None
                 self._log.debug(f"Subtitle of '{subtitle}' is mostly just the series name. Removing it.")
+                subtitle = None
 
         elif subtitle:
             album_sort = f"{title} - {subtitle}"
@@ -448,9 +448,12 @@ class Audible(BeetsPlugin):
     def parse_original_date(self, work: Dict) -> Dict:
         original_date = {}
         if work is not None:
-            original_date["year"] = int(work.findtext("original_publication_year"))
-            original_date["month"] = int(work.findtext("original_publication_month"))
-            original_date["day"] = int(work.findtext("original_publication_day"))
+            year = work.findtext("original_publication_year")
+            original_date["year"] = int(year) if year.isdigit() else None
+            month = work.findtext("original_publication_month")
+            original_date["month"] = int(month) if month.isdigit() else None
+            day = work.findtext("original_publication_day")
+            original_date["day"] = int(day) if day.isdigit() else None
         
         return original_date
     
