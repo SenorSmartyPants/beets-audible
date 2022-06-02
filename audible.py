@@ -13,7 +13,8 @@ from beets.plugins import BeetsPlugin, get_distance
 import mediafile
 from natsort import os_sorted
 
-from .api import get_book_info, make_request, search_audible, search_goodreads
+from .api import get_book_info, make_request, search_audible
+from .goodreads import get_original_date
 
 class Audible(BeetsPlugin):
     data_source = 'Audible'
@@ -386,7 +387,7 @@ class Audible(BeetsPlugin):
         original_day=day
 
         if self.config['goodreads_apikey']:
-            original_date = self.get_original_date(asin, authors, title)
+            original_date = get_original_date(self, asin, authors, title)
             if original_date.get("year") is not None:
                 original_year=original_date.get("year")
                 original_month=original_date.get("month")
